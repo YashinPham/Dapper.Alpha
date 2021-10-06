@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace Dapper.Alpha
 {
-    public class DbSession
+    public class DbSession : IDisposable
     {
         private readonly Guid Id = Guid.NewGuid();
 
@@ -58,7 +58,13 @@ namespace Dapper.Alpha
 
         public void CommitTransaction()
         {
-            Transaction.Commit();
+            Transaction?.Commit();
+            Transaction = null;
+        }
+
+        public void Rollback()
+        {
+            Transaction?.Rollback();
             Transaction = null;
         }
 
@@ -66,6 +72,12 @@ namespace Dapper.Alpha
         {
             var wasClosed = InnerConnection.State == ConnectionState.Closed;
             if (wasClosed) InnerConnection.Open();
+        }
+
+        public void Dispose()
+        {
+            Transaction?.Dispose();
+            Connection?.Dispose();
         }
     }
 }

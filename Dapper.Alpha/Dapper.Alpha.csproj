@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Authors>CyrusPham</Authors>
+    <PackageProjectUrl>https://github.com/CyrusPham/Dapper.Alpha</PackageProjectUrl>
+    <PackageTags>dapper crud orm sql mysql mssql poco</PackageTags>
+    <Description>CRUD for Dapper</Description>
   </PropertyGroup>
 
   <ItemGroup>

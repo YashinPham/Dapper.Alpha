@@ -43,12 +43,12 @@ namespace Dapper.Alpha
 
         public void Rollback()
         {
-            throw new NotImplementedException();
+            DbSession.Rollback();
         }
 
         public void Dispose()
         {
-            DbSession.Connection.Dispose();
+            DbSession.Dispose();
         }
     }
 }
