@@ -1,24 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Authors>CyrusPham</Authors>
-    <PackageProjectUrl>https://github.com/CyrusPham/Dapper.Alpha</PackageProjectUrl>
-    <PackageTags>dapper crud orm sql mysql mssql poco</PackageTags>
-    <Description>CRUD for Dapper</Description>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Configurations\SqlParameterTemplate.xpo" />
-    <None Remove="Configurations\SqlParameterTemplate.xpo.diagram" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.90" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="MySql.Data" Version="8.0.26" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-  </ItemGroup>
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Version>1.0.1</Version>
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
+		<Authors>CyrusPham</Authors>
+		<PackageProjectUrl>https://github.com/CyrusPham/Dapper.Alpha</PackageProjectUrl>
+		<PackageTags>dapper crud orm sql mysql mssql poco</PackageTags>
+		<Description>CRUD for Dapper</Description>
+	</PropertyGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1'">
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Dapper" Version="2.0.90" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+		<PackageReference Include="MySql.Data" Version="8.0.26" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+	</ItemGroup>
 </Project>
