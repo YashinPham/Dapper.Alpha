@@ -1,9 +1,8 @@
-﻿using Dapper.Alpha.Metadata;
+﻿using Dapper.Alpha.Configurations;
+using Dapper.Alpha.Metadata;
 using Dapper.Alpha.SqlBuilders;
-using MySql.Data.MySqlClient;
 using System;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace Dapper.Alpha
 {
@@ -29,19 +28,23 @@ namespace Dapper.Alpha
 
         public void InitSqlBuilder()
         {
-            if (InnerConnection is SqlConnection)
+            switch (OrmConfiguration.Dialect)
             {
-                SqlBuilder = MsSqlBuilder.GetInstance();
-                Dialect = SqlDialect.MsSql;
-            }
-            else if (InnerConnection is MySqlConnection)
-            {
-                SqlBuilder = MySqlBuilder.GetInstance();
-                Dialect = SqlDialect.MySql;
-            }
-            else
-            {
-                throw new DataException($"Dapper.Alpha only supports {SqlDialect.MySql}, {SqlDialect.MsSql}");
+                case SqlDialect.MsSql:
+                    {
+                        Dialect = SqlDialect.MsSql;
+                        SqlBuilder = MsSqlBuilder.GetInstance();
+                    }
+                    break;
+                case SqlDialect.MySql:
+                    {
+                        Dialect = SqlDialect.MsSql;
+                        SqlBuilder = MySqlBuilder.GetInstance();
+                    }
+                    break;
+
+                default:
+                    throw new DataException($"Dapper.Alpha only supports {SqlDialect.MySql}, {SqlDialect.MsSql}");
             }
         }
 

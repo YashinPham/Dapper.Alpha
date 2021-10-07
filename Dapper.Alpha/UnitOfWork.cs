@@ -1,4 +1,5 @@
 ﻿using Dapper.Alpha.Configurations;
+using Dapper.Alpha.Infrastructure;
 using System;
 using System.Collections.Concurrent;
 using System.Data;
@@ -11,9 +12,9 @@ namespace Dapper.Alpha
 
         private ConcurrentDictionary<Type, object> _repositories = new ConcurrentDictionary<Type, object>();
 
-        public UnitOfWork()
+        public UnitOfWork(IDbConnectionFactory factory)
         {
-            DbSession = new DbSession(DbSessiontOptionsBuilder.GetConnection());
+            DbSession = new DbSession(factory.CreateConnection());
         }
 
         public UnitOfWork(IDbConnection connection)
