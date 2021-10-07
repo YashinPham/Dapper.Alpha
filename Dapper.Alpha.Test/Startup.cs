@@ -1,4 +1,5 @@
 using Dapper.Alpha.Configurations;
+using Dapper.Alpha.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,10 @@ namespace Dapper.Alpha.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile));
-            services.AddDbSession(option=> option.UseSqlServer(Configuration.GetSection(nameof(AppSettings))[nameof(AppSettings.ConnectionString)]));
+            services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>(option =>
+                new DbConnectionFactory(Configuration.GetSection(nameof(AppSettings))[nameof(AppSettings.ConnectionString)], Metadata.SqlDialect.MsSql)
+            );
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
