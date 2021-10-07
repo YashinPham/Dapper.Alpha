@@ -1,6 +1,5 @@
 # Dapper.Alpha
-[![NuGet](https://img.shields.io/nuget/v/Dapper.Alpha.svg)](https://www.nuget.org/packages/Dapper.Alpha)
-[![NuGet](https://img.shields.io/nuget/dt/Dapper.Alpha.svg)](https://www.nuget.org/packages/Dapper.Alpha)
+
 ## Description
 If you like your code to run fast, you probably know about Micro ORMs.
 They are simple and one of their main goals is to be the fastest execution of your SQL sentences in you data repository.
@@ -88,8 +87,10 @@ public enum SoftDeletedStatus
 ```c#
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddDbSession(option=> option.UseSqlServer("ConnectionString");
-    //services.AddDbSession(option=> option.UseMySql("ConnectionString");
+  services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>(option =>
+    new DbConnectionFactory(Configuration.GetSection(nameof(AppSettings))[nameof(AppSettings.ConnectionString)], Metadata.SqlDialect.MsSql)
+  );
+  services.AddScoped<IUnitOfWork, UnitOfWork>();
 }
 ```
 FindById:
@@ -134,8 +135,5 @@ bool isSuccess = userRepository.Update(user);
 //bool isSuccess = userRepository.Update(user, property => property.Password);
 ```
 
-## License
-
-All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 
