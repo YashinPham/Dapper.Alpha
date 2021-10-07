@@ -1,4 +1,6 @@
 # Dapper.Alpha
+[![NuGet](https://img.shields.io/nuget/v/Dapper.Alpha.svg)](https://www.nuget.org/packages/Dapper.Alpha)
+[![NuGet](https://img.shields.io/nuget/dt/Dapper.Alpha.svg)](https://www.nuget.org/packages/Dapper.Alpha)
 
 ## Description
 If you like your code to run fast, you probably know about Micro ORMs.
@@ -135,5 +137,6 @@ bool isSuccess = userRepository.Update(user);
 //bool isSuccess = userRepository.Update(user, property => property.Password);
 ```
 
+## License
 
-
+All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
