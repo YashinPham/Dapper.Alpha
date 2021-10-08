@@ -12,11 +12,11 @@ namespace Dapper.Alpha
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        public DbSession DbSession;
-
-        public IDbConnection Connection => DbSession.Connection;
+        protected DbSession DbSession;
 
         protected ISqlBuilder _SqlBuilder => DbSession.SqlBuilder;
+
+        public IDbConnection Connection => DbSession.Connection;
 
         public BaseRepository(DbSession session)
         {

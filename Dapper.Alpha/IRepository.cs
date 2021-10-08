@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -7,12 +8,14 @@ namespace Dapper.Alpha
 {
     public interface IRepository<TEntity> where TEntity : class
     {
+        IDbConnection Connection { get; }
+
         TKey Insert<TKey>(TEntity instance);
 
         bool Insert(TEntity instance);
 
         Task<TKey> InsertAsync<TKey>(TEntity instance);
-        
+
         Task<bool> InsertAsync(TEntity instance);
 
         //int BulkInsert(IEnumerable<TEntity> instances);
