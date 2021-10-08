@@ -14,6 +14,8 @@ namespace Dapper.Alpha
     {
         public DbSession DbSession;
 
+        public IDbConnection Connection => DbSession.Connection;
+
         protected ISqlBuilder _SqlBuilder => DbSession.SqlBuilder;
 
         public BaseRepository(DbSession session)

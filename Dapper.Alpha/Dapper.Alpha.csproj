@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Version>1.0.1</Version>
+		<Version>1.0.3</Version>
 		<TargetFrameworks>netstandard2.1</TargetFrameworks>
 		<Authors>CyrusPham</Authors>
 		<PackageProjectUrl>https://github.com/CyrusPham/Dapper.Alpha</PackageProjectUrl>
