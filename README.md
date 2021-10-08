@@ -13,7 +13,7 @@ that generates all the CRUD sentences for a POCO class based on its definition a
 
 ## Features
 - Support for MsSql, MySql.
-- Support soft Deleted.
+- Support soft Deleted, BulkInsert, BulkUpdate.
 - A useful SQL builder and statement formatter which can be used even if you don't need the CRUD features of this library.
 - Implement the repository and unit of work patterns.
 - Fast pre-computed entity queries
@@ -135,6 +135,32 @@ user.Password = "1234566";
 bool isSuccess = userRepository.Update(user);
 //Update any feild
 //bool isSuccess = userRepository.Update(user, property => property.Password);
+```
+BulkInsert:
+
+```c#
+var userRepository = unitOfWork.GetRepository<User>();
+var users = new List<User>();
+users.Add(new User(){
+  Email = "email1@gmail.com",
+  Password = "123456"
+});
+users.Add(new User(){
+  Email = "email2@gmail.com",
+  Password = "123456"
+});
+userRepository.BulkUpdate(users);
+```
+
+BulkUpdate:
+
+```c#
+var userRepository = unitOfWork.GetRepository<User>();
+var users = userRepository.FindAll();
+users.All(user=>{
+  user.Status = SoftDeletedStatus.Deleted;
+});
+bool isSuccess = userRepository.BulkUpdate(users);
 ```
 
 ## License
