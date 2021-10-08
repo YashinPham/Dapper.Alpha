@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -7,17 +8,19 @@ namespace Dapper.Alpha
 {
     public interface IRepository<TEntity> where TEntity : class
     {
+        IDbConnection Connection { get; }
+
         TKey Insert<TKey>(TEntity instance);
 
         bool Insert(TEntity instance);
 
         Task<TKey> InsertAsync<TKey>(TEntity instance);
-        
+
         Task<bool> InsertAsync(TEntity instance);
 
-        //int BulkInsert(IEnumerable<TEntity> instances);
+        int BulkInsert(IEnumerable<TEntity> instances);
 
-        //Task<int> BulkInsertAsync(IEnumerable<TEntity> instances);
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances);
 
         bool Delete(TEntity instance, int? commandTimeout = null);
 
@@ -35,9 +38,9 @@ namespace Dapper.Alpha
 
         Task<int> UpdateAsync(TEntity instance, params Expression<Func<TEntity, object>>[] includes);
 
-        //Task<int> BulkUpdateAsync(IEnumerable<TEntity> instances);
+        Task<int> BulkUpdateAsync(IEnumerable<TEntity> instances);
 
-        //bool BulkUpdate(IEnumerable<TEntity> instances);
+        bool BulkUpdate(IEnumerable<TEntity> instances);
 
         int Count();
 

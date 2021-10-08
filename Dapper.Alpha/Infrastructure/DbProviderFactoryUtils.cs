@@ -12,45 +12,47 @@ namespace Dapper.Alpha.Infrastructure
     {
         public static DbProviderFactory GetDbProviderFactory(SqlDialect type)
         {
-            if (type == SqlDialect.MsSql)
-#if NETFULL
-                return GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
-#else
-                return GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
-#endif
-            if (type == SqlDialect.SqLite)
+            DbProviderFactory factory = null;
+            switch (type)
             {
+                case SqlDialect.MsSql:
+                    {
 #if NETFULL
-                return GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
+                        factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
+                        break;
 #else
-                return GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
+                        factory = GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
+                        if (factory == null)
+                            factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
+                        break;
 #endif
+                    }
+                case SqlDialect.SqLite:
+                    {
+#if NETFULL
+                        factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
+                        break;
+#else
+                        factory = GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
+                        if (factory == null)
+                            factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
+
+                        break;
+#endif
+                    }
+                case SqlDialect.MySql:
+                    factory = GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
+                    break;
+
+                case SqlDialect.PostgreSql:
+                    factory = GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
+                    break;
+
             }
-            if (type == SqlDialect.MySql)
-                return GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
-            if (type == SqlDialect.PostgreSql)
-                return GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
+            if (factory == null)
+                throw new InvalidOperationException($"Could not load library with sql provider of {type} dialect.");
 
-            throw new NotSupportedException(string.Format("Unsupported Provider Factory", type.ToString()));
-        }
-
-        public static DbProviderFactory GetDbProviderFactory(string providerName)
-        {
-#if NETFULL
-    return DbProviderFactories.GetFactory(providerName);
-#else
-            var providername = providerName.ToLower();
-            if (providerName == "system.data.sqlclient" || providerName == "microsoft.data.sqlclient")
-                return GetDbProviderFactory(SqlDialect.MsSql);
-            if (providerName == "system.data.sqlite" || providerName == "microsoft.data.sqlite")
-                return GetDbProviderFactory(SqlDialect.SqLite);
-            if (providerName == "mysql.data.mysqlclient" || providername == "mysql.data")
-                return GetDbProviderFactory(SqlDialect.MySql);
-            if (providerName == "npgsql")
-                return GetDbProviderFactory(SqlDialect.PostgreSql);
-
-            throw new NotSupportedException(string.Format("Unsupported Provider Factory", providerName));
-#endif
+            return factory;
         }
 
         public static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
@@ -58,14 +60,10 @@ namespace Dapper.Alpha.Infrastructure
             var instance = GetStaticProperty(dbProviderFactoryTypename, "Instance");
             if (instance == null)
             {
-                var a = LoadAssembly(assemblyName);
-                if (a != null)
+                var assembly = LoadAssembly(assemblyName);
+                if (assembly != null)
                     instance = GetStaticProperty(dbProviderFactoryTypename, "Instance");
             }
-
-            if (instance == null)
-                throw new InvalidOperationException(string.Format("Unable to retrieve DbProvider Factory Form", dbProviderFactoryTypename));
-
             return instance as DbProviderFactory;
         }
 

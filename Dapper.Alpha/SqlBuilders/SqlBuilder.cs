@@ -820,12 +820,16 @@ namespace Dapper.Alpha.SqlBuilders
             return dynParams;
         }
 
-        public virtual int BulkInsert<TEntity>(IEnumerable<TEntity> instances, DbSession dbSession, int? commandTimeout) where TEntity : class
+        public IEnumerable<DynamicParameters> GetParams<TEntity>(IEnumerable<TEntity> instances, IEnumerable<string> paramNames, params Expression<Func<TEntity, object>>[] includes) where TEntity : class
         {
-            var insertTypeCmd = GetCmdInsert<TEntity>();
-
-
-            return 0;
+            var multiExec = new List<DynamicParameters>();
+            instances.All(instance =>
+            {
+                var dynParams = GetParams<TEntity>(instance, paramNames, includes);
+                multiExec.Add(dynParams);
+                return true;
+            });
+            return multiExec;
         }
 
         public virtual bool Insert<TEntity>(TEntity instance, DbSession dbSession, int? commandTimeout = null) where TEntity : class
@@ -918,6 +922,36 @@ namespace Dapper.Alpha.SqlBuilders
                 idProperty.SetValue(instance, Convert.ChangeType(first.id, idProperty.PropertyType), null);
             }
             return (TKey)Convert.ChangeType(idProperty.GetValue(instance), typeof(TKey));
+        }
+
+        public virtual int BulkInsert<TEntity>(IEnumerable<TEntity> instances, DbSession dbSession, int? commandTimeout) where TEntity : class
+        {
+            var entityType = typeof(TEntity);
+            var cmd = GetCmdInsert<TEntity>();
+            var multiExec = new List<DynamicParameters>();
+            var sqlProps = GetSqlProperties(entityType);
+            instances?.All(entity =>
+            {
+                var dynParams = GetParams<TEntity>(entity, sqlProps.Select(o => o.PropertyName));
+                multiExec.Add(dynParams);
+                return true;
+            });
+            return dbSession.Connection.Execute(cmd.ToString(), multiExec, dbSession.Transaction, commandTimeout);
+        }
+
+        public Task<int> BulkInsertAsync<TEntity>(IEnumerable<TEntity> instances, DbSession dbSession, int? commandTimeout = null) where TEntity : class
+        {
+            var entityType = typeof(TEntity);
+            var cmd = GetCmdInsert<TEntity>();
+            var multiExec = new List<DynamicParameters>();
+            var sqlProps = GetSqlProperties(entityType);
+            instances?.All(entity =>
+            {
+                var dynParams = GetParams<TEntity>(entity, sqlProps.Select(o => o.PropertyName));
+                multiExec.Add(dynParams);
+                return true;
+            });
+            return dbSession.Connection.ExecuteAsync(cmd.ToString(), multiExec, dbSession.Transaction, commandTimeout);
         }
     }
 }
