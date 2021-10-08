@@ -19,12 +19,6 @@ namespace Dapper.Alpha.SqlBuilders
     {
         private static readonly ConcurrentDictionary<Type, string> TableNames = new ConcurrentDictionary<Type, string>();
 
-        private static readonly ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>> KeyProperties = new ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>>();
-
-        private static readonly ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>> IdentityProperties = new ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>>();
-
-        private static readonly ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>> ComputedProperties = new ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>>();
-
         private static readonly ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>> SqlProperties = new ConcurrentDictionary<Type, IEnumerable<SqlPropertyInfo>>();
 
         private static readonly ConcurrentDictionary<string, SqlCmdQuery> SqlBuilderCacheDict = new ConcurrentDictionary<string, SqlCmdQuery>();
@@ -68,30 +62,6 @@ namespace Dapper.Alpha.SqlBuilders
             {
                 var sqlProps = entityType.GetProperties().Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
                 return sqlProps.Select(o => new SqlPropertyInfo(o));
-            });
-        }
-
-        protected IEnumerable<SqlPropertyInfo> GetKeyProperties(Type entityType)
-        {
-            return KeyProperties.GetOrAdd(entityType, entityType =>
-            {
-                return GetSqlProperties(entityType).Where(p => p.IsPrimaryKey);
-            });
-        }
-
-        protected IEnumerable<SqlPropertyInfo> GetIdentityProperties(Type entityType)
-        {
-            return IdentityProperties.GetOrAdd(entityType, entityType =>
-            {
-                return GetSqlProperties(entityType).Where(p => p.IsIdentity);
-            });
-        }
-
-        protected IEnumerable<SqlPropertyInfo> GetComputedProperties(Type entityType)
-        {
-            return IdentityProperties.GetOrAdd(entityType, entityType =>
-            {
-                return GetSqlProperties(entityType).Where(p => p.IsComputed);
             });
         }
 
@@ -453,7 +423,7 @@ namespace Dapper.Alpha.SqlBuilders
             return SqlBuilderCacheDict.GetOrAdd(cacheKey, cacheKey =>
             {
                 var sqlProps = GetSqlProperties(entityType);
-                var whereProps = GetKeyProperties(entityType).ToList();
+                var whereProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
                 if (!whereProps.Any())
                     throw new ArgumentException("GetFindById<T> only supports an entity with a [KeyAttribute]");
 
@@ -712,7 +682,7 @@ namespace Dapper.Alpha.SqlBuilders
             {
                 var tableName = GetTableName(entityType);
                 var sqlProps = GetSqlProperties(entityType);
-                var keyProps = GetKeyProperties(entityType).ToArray();
+                var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
                 if (!(keyProps?.Any() ?? false))
                     throw new ArgumentException("Entity must have at least one [Key] property");
 
@@ -753,7 +723,7 @@ namespace Dapper.Alpha.SqlBuilders
             {
                 var tableName = GetTableName(entityType);
                 var sqlProps = GetSqlProperties(entityType);
-                var keyProps = GetKeyProperties(entityType).ToArray();
+                var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
                 if (!(keyProps?.Any() ?? false))
                     throw new ArgumentException("Entity must have at least one [Key] property");
 
@@ -781,7 +751,7 @@ namespace Dapper.Alpha.SqlBuilders
             {
                 var tableName = GetTableName(entityType);
                 var sqlProps = GetSqlProperties(entityType);
-                var keyProps = GetKeyProperties(entityType).ToArray();
+                var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
                 if (!(keyProps?.Any() ?? false))
                     throw new ArgumentException("Entity must have at least one [Key] property");
 
@@ -849,9 +819,12 @@ namespace Dapper.Alpha.SqlBuilders
             }
             return dynParams;
         }
-        
+
         public virtual int BulkInsert<TEntity>(IEnumerable<TEntity> instances, DbSession dbSession, int? commandTimeout) where TEntity : class
         {
+            var insertTypeCmd = GetCmdInsert<TEntity>();
+
+
             return 0;
         }
 
@@ -861,14 +834,14 @@ namespace Dapper.Alpha.SqlBuilders
             var cmd = GetCmdInsert<TEntity>();
             var sqlQuery = new StringBuilder(cmd.ToString());
             var sqlProps = GetSqlProperties(entityType);
-            var keyProps = GetKeyProperties(entityType).Select(o => o.PropertyInfo).ToArray();
+            var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
             var isIdentity = sqlProps.Any(o => o.IsIdentity);
             if (isIdentity)
                 sqlQuery.AppendFormat("; {0}", SqlOptions.SqlIdentityStatement);
 
             var dynParams = GetParams<TEntity>(instance, sqlProps.Select(o => o.PropertyName));
             var result = dbSession.Connection.QueryMultiple(sqlQuery.ToString(), dynParams, dbSession.Transaction, commandTimeout: commandTimeout);
-            var idProperty = keyProps.FirstOrDefault();
+            var idProperty = keyProps.Select(prop => prop.PropertyInfo).FirstOrDefault();
             if (isIdentity)
             {
                 var first = result.Read().FirstOrDefault();
@@ -884,14 +857,14 @@ namespace Dapper.Alpha.SqlBuilders
             var cmd = GetCmdInsert<TEntity>();
             var sqlQuery = new StringBuilder(cmd.ToString());
             var sqlProps = GetSqlProperties(entityType);
-            var keyProps = GetKeyProperties(entityType).Select(o => o.PropertyInfo).ToArray();
+            var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
             var isIdentity = sqlProps.Any(o => o.IsIdentity);
             if (isIdentity)
                 sqlQuery.AppendFormat("; {0}", SqlOptions.SqlIdentityStatement);
 
             var dynParams = GetParams<TEntity>(instance, sqlProps.Select(o => o.PropertyName));
             var result = dbSession.Connection.QueryMultiple(sqlQuery.ToString(), dynParams, dbSession.Transaction, commandTimeout: commandTimeout);
-            var idProperty = keyProps.FirstOrDefault();
+            var idProperty = keyProps.Select(prop => prop.PropertyInfo).FirstOrDefault();
             if (isIdentity)
             {
                 var first = result.Read().FirstOrDefault();
@@ -907,14 +880,14 @@ namespace Dapper.Alpha.SqlBuilders
             var cmd = GetCmdInsert<TEntity>();
             var sqlQuery = new StringBuilder(cmd.ToString());
             var sqlProps = GetSqlProperties(entityType);
-            var keyProps = GetKeyProperties(entityType).Select(o => o.PropertyInfo).ToArray();
+            var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
             var isIdentity = sqlProps.Any(o => o.IsIdentity);
             if (isIdentity)
                 sqlQuery.AppendFormat("; {0}", SqlOptions.SqlIdentityStatement);
 
             var dynParams = GetParams<TEntity>(instance, sqlProps.Select(o => o.PropertyName));
             var result = dbSession.Connection.QueryMultiple(sqlQuery.ToString(), dynParams, dbSession.Transaction, commandTimeout: commandTimeout);
-            var idProperty = keyProps.FirstOrDefault();
+            var idProperty = keyProps.Select(prop => prop.PropertyInfo).FirstOrDefault();
             if (isIdentity)
             {
                 var first = result.Read().FirstOrDefault();
@@ -930,14 +903,14 @@ namespace Dapper.Alpha.SqlBuilders
             var cmd = GetCmdInsert<TEntity>();
             var sqlQuery = new StringBuilder(cmd.ToString());
             var sqlProps = GetSqlProperties(entityType);
-            var keyProps = GetKeyProperties(entityType).Select(o => o.PropertyInfo).ToArray();
+            var keyProps = sqlProps.Where(prop => prop.IsPrimaryKey).ToList();
             var isIdentity = sqlProps.Any(o => o.IsIdentity);
             if (isIdentity)
                 sqlQuery.AppendFormat("; {0}", SqlOptions.SqlIdentityStatement);
 
             var dynParams = GetParams<TEntity>(instance, sqlProps.Select(o => o.PropertyName));
             var result = await dbSession.Connection.QueryMultipleAsync(sqlQuery.ToString(), dynParams, dbSession.Transaction, commandTimeout: commandTimeout);
-            var idProperty = keyProps.FirstOrDefault();
+            var idProperty = keyProps.Select(prop => prop.PropertyInfo).FirstOrDefault();
             if (isIdentity)
             {
                 var first = result.Read().FirstOrDefault();
