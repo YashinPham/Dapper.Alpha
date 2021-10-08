@@ -12,45 +12,33 @@ namespace Dapper.Alpha.Infrastructure
     {
         public static DbProviderFactory GetDbProviderFactory(SqlDialect type)
         {
-            if (type == SqlDialect.MsSql)
-#if NETFULL
-                return GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
-#else
-                return GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
-#endif
-            if (type == SqlDialect.SqLite)
+            switch (type)
             {
-#if NETFULL
-                return GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
-#else
-                return GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
-#endif
+                case SqlDialect.MsSql:
+                    {
+                        var factory = GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
+                        if (factory == null)
+                            factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
+
+                        return factory;
+                    }
+                case SqlDialect.SqLite:
+                    {
+                        var factory = GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
+                        if (factory == null)
+                            factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
+
+                        return factory;
+                    }
+                case SqlDialect.MySql:
+                    return GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
+
+                case SqlDialect.PostgreSql:
+                    return GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
+
+                default:
+                    throw new NotSupportedException(string.Format("Unsupported Provider Factory", type.ToString()));
             }
-            if (type == SqlDialect.MySql)
-                return GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
-            if (type == SqlDialect.PostgreSql)
-                return GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
-
-            throw new NotSupportedException(string.Format("Unsupported Provider Factory", type.ToString()));
-        }
-
-        public static DbProviderFactory GetDbProviderFactory(string providerName)
-        {
-#if NETFULL
-    return DbProviderFactories.GetFactory(providerName);
-#else
-            var providername = providerName.ToLower();
-            if (providerName == "system.data.sqlclient" || providerName == "microsoft.data.sqlclient")
-                return GetDbProviderFactory(SqlDialect.MsSql);
-            if (providerName == "system.data.sqlite" || providerName == "microsoft.data.sqlite")
-                return GetDbProviderFactory(SqlDialect.SqLite);
-            if (providerName == "mysql.data.mysqlclient" || providername == "mysql.data")
-                return GetDbProviderFactory(SqlDialect.MySql);
-            if (providerName == "npgsql")
-                return GetDbProviderFactory(SqlDialect.PostgreSql);
-
-            throw new NotSupportedException(string.Format("Unsupported Provider Factory", providerName));
-#endif
         }
 
         public static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
