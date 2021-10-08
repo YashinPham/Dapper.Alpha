@@ -18,9 +18,9 @@ namespace Dapper.Alpha
 
         Task<bool> InsertAsync(TEntity instance);
 
-        //int BulkInsert(IEnumerable<TEntity> instances);
+        int BulkInsert(IEnumerable<TEntity> instances);
 
-        //Task<int> BulkInsertAsync(IEnumerable<TEntity> instances);
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances);
 
         bool Delete(TEntity instance, int? commandTimeout = null);
 
@@ -38,9 +38,9 @@ namespace Dapper.Alpha
 
         Task<int> UpdateAsync(TEntity instance, params Expression<Func<TEntity, object>>[] includes);
 
-        //Task<int> BulkUpdateAsync(IEnumerable<TEntity> instances);
+        Task<int> BulkUpdateAsync(IEnumerable<TEntity> instances);
 
-        //bool BulkUpdate(IEnumerable<TEntity> instances);
+        bool BulkUpdate(IEnumerable<TEntity> instances);
 
         int Count();
 

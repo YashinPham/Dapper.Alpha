@@ -35,6 +35,8 @@ namespace Dapper.Alpha.SqlBuilders
 
         DynamicParameters GetParams<TEntity>(TEntity instance, IEnumerable<string> paramNames, params Expression<Func<TEntity, object>>[] includes) where TEntity : class;
 
+        IEnumerable<DynamicParameters> GetParams<TEntity>(IEnumerable<TEntity> instances, IEnumerable<string> paramNames, params Expression<Func<TEntity, object>>[] includes) where TEntity : class;
+
         List<QueryExpression> GetQueryProperties<TEntity>(Expression expr);
 
         void BuildQuerySql<TEntity>(IList<QueryExpression> queryProperties, ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object>> conditions, ref int qLevel);
@@ -48,5 +50,7 @@ namespace Dapper.Alpha.SqlBuilders
         Task<TKey> InsertAsync<TKey, TEntity>(TEntity instance, DbSession dbSession, int? commandTimeout = null) where TEntity : class;
 
         int BulkInsert<TEntity>(IEnumerable<TEntity> instances, DbSession dbSession, int? commandTimeout = null) where TEntity : class;
+
+        Task<int> BulkInsertAsync<TEntity>(IEnumerable<TEntity> instances, DbSession dbSession, int? commandTimeout = null) where TEntity : class;
     }
 }

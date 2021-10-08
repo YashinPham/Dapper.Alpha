@@ -43,10 +43,13 @@ namespace Dapper.Alpha.Test.Controllers
         [HttpPut]
         public async Task<bool> UpdateAsync(ConfigPayRollDto dto)
         {
-            var config = await ConfigPayRollRepository.FindByIdAsync(dto.Id);
-            config = _mapper.Map(dto, config);
-            config.ModifiedAt = DateTime.Now;
-            return await ConfigPayRollRepository.UpdateAsync(config) > 0;
+            var configs = await ConfigPayRollRepository.FindAllAsync();
+            configs.All(o =>
+            {
+                o.ModifiedAt = DateTime.Now;
+                return true;
+            });
+            return await ConfigPayRollRepository.BulkUpdateAsync(configs) > 0;
         }
 
         [HttpPost]
@@ -56,9 +59,25 @@ namespace Dapper.Alpha.Test.Controllers
             var config = new EntryType();
             config.AACreatedDate = DateTime.Now;
             config.AAStatus = ObjectStatus.Alive;
-            config.ACEntryTypeName = "Test";
+            config.ACEntryTypeName = "Test 111";
             config.ACEntryTypeDesc = "";
-            var id  = entryRepo.Insert<long>(config);
+
+            var list = new List<EntryType>();
+            list.Add(new EntryType()
+            {
+                AACreatedDate = DateTime.Now,
+                AAStatus = ObjectStatus.Alive,
+                ACEntryTypeName = "Test 111",
+                ACEntryTypeDesc = ""
+            });
+            list.Add(new EntryType()
+            {
+                AACreatedDate = DateTime.Now,
+                AAStatus = ObjectStatus.Alive,
+                ACEntryTypeName = "Test 222",
+                ACEntryTypeDesc = ""
+            });
+            var id = entryRepo.BulkInsert(list);
             return true;
         }
     }

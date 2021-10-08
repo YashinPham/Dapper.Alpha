@@ -17,19 +17,28 @@ namespace Dapper.Alpha.Infrastructure
             {
                 case SqlDialect.MsSql:
                     {
+#if NETFULL
+                        factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
+                        break;
+#else
                         factory = GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
                         if (factory == null)
                             factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
-
-                        return factory;
+                        break;
+#endif
                     }
                 case SqlDialect.SqLite:
                     {
+#if NETFULL
+                        factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
+                        break;
+#else
                         factory = GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
                         if (factory == null)
                             factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
 
-                        return factory;
+                        break;
+#endif
                     }
                 case SqlDialect.MySql:
                     factory = GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
