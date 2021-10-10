@@ -1,6 +1,7 @@
 # Dapper.Alpha
 [![NuGet](https://img.shields.io/nuget/v/Dapper.Alpha.svg)](https://www.nuget.org/packages/Dapper.Alpha)
 [![NuGet](https://img.shields.io/nuget/dt/Dapper.Alpha.svg)](https://www.nuget.org/packages/Dapper.Alpha)
+[![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
 If you like your code to run fast, you probably know about Micro ORMs.
@@ -11,12 +12,19 @@ This tool abstracts the generation of the SQL sentence for CRUD operations based
 We know there are plugins for both Micro ORMs that implement the execution of these tasks, but that's exactly where this tool is different. The "SQL Generator" is a generic component
 that generates all the CRUD sentences for a POCO class based on its definition and the possibility to override the SQL generator and the way it builds each sentence.
 
+The original idea was taken from [phnx47](https://github.com/phnx47/dapper-repositories).
 ## Features
 - Support for MsSql, MySql.
 - Support soft Deleted, BulkInsert, BulkUpdate.
 - A useful SQL builder and statement formatter which can be used even if you don't need the CRUD features of this library.
 - Implement the repository and unit of work patterns.
 - Fast pre-computed entity queries
+
+## Installation
+
+```sh
+dotnet add package Dapper.Alpha
+```
 
 ## Docs
 ### Metadata attributes
