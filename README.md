@@ -177,7 +177,6 @@ bool isSuccess = userRepository.BulkUpdate(users);
 ![donate-btc](https://user-images.githubusercontent.com/44061499/136683352-53dde31c-6a7e-45d3-ad77-d7d86876a456.png)
 ![donate-eth](https://user-images.githubusercontent.com/44061499/136683356-239a9537-ecc9-414c-8acd-2dcace3e10b7.png)
 ![donate-trx](https://user-images.githubusercontent.com/44061499/136683362-5adad679-25cb-4aec-84c5-461ca3844120.png)
-![donate-sol](https://user-images.githubusercontent.com/44061499/136688670-48736753-e6eb-4a90-bc37-55d43452f675.png)
 
 **Paypal:** https://www.paypal.com/paypalme/nghiaphamqn
 
@@ -188,8 +187,6 @@ bool isSuccess = userRepository.BulkUpdate(users);
 **TRX:** TDASKEHF4HPGw9u48exLAvRVXo8YQmKHH7
 
 **ETH & BSC & Heco:** 0x230810F96299E6172e564809f600A592e2a81000
-
-**Solana:** ECv8pHq28wm7dUDMDxdyAPZDAWSv4KQBXcmiFrQcS2mZ
 
 ![image](https://user-images.githubusercontent.com/44061499/136688224-3aa3af74-8bff-4a31-b0d5-e510a31ccf67.png)
 ## License
