@@ -165,12 +165,25 @@ bool isSuccess = userRepository.BulkUpdate(users);
 
 ## Buy me a cup coffee
 ![donate-paypal](https://user-images.githubusercontent.com/44061499/136683350-9176a5e9-b0f5-42b8-a809-1021a8141cc0.png)
+![donate-momo](https://user-images.githubusercontent.com/44061499/136688401-d0c9662e-5e18-479c-8e2e-4a2584306ce0.png)
 ![donate-btc](https://user-images.githubusercontent.com/44061499/136683352-53dde31c-6a7e-45d3-ad77-d7d86876a456.png)
 ![donate-eth](https://user-images.githubusercontent.com/44061499/136683356-239a9537-ecc9-414c-8acd-2dcace3e10b7.png)
-![donate-bsc](https://user-images.githubusercontent.com/44061499/136683357-3a40128a-f975-4ea1-af63-a3dc6e4e8f42.png)
-![donate-heco](https://user-images.githubusercontent.com/44061499/136683361-ee5b354a-71cf-4c50-ab07-0be83cd9880f.png)
 ![donate-trx](https://user-images.githubusercontent.com/44061499/136683362-5adad679-25cb-4aec-84c5-461ca3844120.png)
+![donate-sol](https://user-images.githubusercontent.com/44061499/136688670-48736753-e6eb-4a90-bc37-55d43452f675.png)
 
+**Paypal:** https://www.paypal.com/paypalme/nghiaphamqn
+
+**Momo:** https://nhantien.momo.vn/0379690630
+
+**BTC:** bc1qwxcfpgwn6qzm67munujmaavcfqmueht2wdz8v7
+
+**TRX:** TDASKEHF4HPGw9u48exLAvRVXo8YQmKHH7
+
+**ETH & BSC & Heco:** 0x230810F96299E6172e564809f600A592e2a81000
+
+**Solana:** ECv8pHq28wm7dUDMDxdyAPZDAWSv4KQBXcmiFrQcS2mZ
+
+![image](https://user-images.githubusercontent.com/44061499/136688224-3aa3af74-8bff-4a31-b0d5-e510a31ccf67.png)
 ## License
 
 All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
