@@ -163,6 +163,14 @@ users.All(user=>{
 bool isSuccess = userRepository.BulkUpdate(users);
 ```
 
+## Buy me a cup coffee
+![donate-paypal](https://user-images.githubusercontent.com/44061499/136683350-9176a5e9-b0f5-42b8-a809-1021a8141cc0.png)
+![donate-btc](https://user-images.githubusercontent.com/44061499/136683352-53dde31c-6a7e-45d3-ad77-d7d86876a456.png)
+![donate-eth](https://user-images.githubusercontent.com/44061499/136683356-239a9537-ecc9-414c-8acd-2dcace3e10b7.png)
+![donate-bsc](https://user-images.githubusercontent.com/44061499/136683357-3a40128a-f975-4ea1-af63-a3dc6e4e8f42.png)
+![donate-heco](https://user-images.githubusercontent.com/44061499/136683361-ee5b354a-71cf-4c50-ab07-0be83cd9880f.png)
+![donate-trx](https://user-images.githubusercontent.com/44061499/136683362-5adad679-25cb-4aec-84c5-461ca3844120.png)
+
 ## License
 
 All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
