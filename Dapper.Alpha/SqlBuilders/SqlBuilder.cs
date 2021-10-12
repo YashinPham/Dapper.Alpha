@@ -51,7 +51,7 @@ namespace Dapper.Alpha.SqlBuilders
                         : string.Format(SqlOptions.Delimiter, attr.Name);
 
                 return SqlOptions.IsUsingSchemas
-                    ? string.Format(SqlOptions.Delimiter, attr.Schema) + "." + string.Format(SqlOptions.Delimiter, string.Format("{0}s", entityType.Name))
+                    ? string.Format(SqlOptions.Delimiter, SqlOptions.DefaultSchema) + "." + string.Format(SqlOptions.Delimiter, string.Format("{0}s", entityType.Name))
                     : string.Format(SqlOptions.Delimiter, string.Format("{0}s", entityType.Name));
             });
         }

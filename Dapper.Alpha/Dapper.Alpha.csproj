@@ -1,11 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Version>1.0.4</Version>
+		<Version>1.0.6</Version>
 		<TargetFrameworks>netstandard2.1</TargetFrameworks>
 		<Authors>CyrusPham</Authors>
 		<PackageProjectUrl>https://github.com/CyrusPham/Dapper.Alpha</PackageProjectUrl>
-		<PackageTags>dapper crud orm sql mysql mssql poco</PackageTags>
-		<Description>CRUD for Dapper</Description>
+		<PackageTags>dapper crud orm sql  sqlite mysql mssql postgresql poco</PackageTags>
+		<Description>CRUD extension methods for Dapper
+Features:
+- Support soft Deleted, BulkInsert, BulkUpdate.
+- A useful SQL builder and statement formatter which can be used even if you don't need the CRUD features of this library.
+- Implement the repository and unit of work patterns.
+- Fast pre-computed entity queries.</Description>
+		<PackageReleaseNotes>- Support PosgreSql, Sqlite
+- Support BulkInsert, BulkUpdate</PackageReleaseNotes>
+		<RepositoryUrl>https://github.com/CyrusPham/Dapper.Alpha</RepositoryUrl>
+		<Copyright />
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
