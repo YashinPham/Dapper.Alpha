@@ -14,7 +14,7 @@ that generates all the CRUD sentences for a POCO class based on its definition a
 
 The original idea was taken from [phnx47](https://github.com/phnx47/dapper-repositories).
 ## Features
-- Support for MsSql, MySql, PostgreSql, Sqlite
+- Support for MsSql, MySql, PostgreSql, Sqlite.
 - Support soft Deleted, BulkInsert, BulkUpdate.
 - A useful SQL builder and statement formatter which can be used even if you don't need the CRUD features of this library.
 - Implement the repository and unit of work patterns.
