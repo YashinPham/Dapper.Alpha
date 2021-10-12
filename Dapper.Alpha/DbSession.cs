@@ -34,18 +34,30 @@ namespace Dapper.Alpha
                     {
                         Dialect = SqlDialect.MsSql;
                         SqlBuilder = MsSqlBuilder.GetInstance();
+                        break;
                     }
-                    break;
                 case SqlDialect.MySql:
                     {
                         Dialect = SqlDialect.MsSql;
                         SqlBuilder = MySqlBuilder.GetInstance();
+                        break;
                     }
-                    break;
-
+                case SqlDialect.PostgreSql:
+                    {
+                        Dialect = SqlDialect.PostgreSql;
+                        SqlBuilder = PostreSqlBuilder.GetInstance();
+                        break;
+                    }
+                case SqlDialect.SqLite:
+                    {
+                        Dialect = SqlDialect.SqLite;
+                        SqlBuilder = SqliteBuilder.GetInstance();
+                        break;
+                    }
                 default:
-                    throw new DataException($"Dapper.Alpha only supports {SqlDialect.MySql}, {SqlDialect.MsSql}");
+                    throw new DataException($"Dapper.Alpha does not supports sql provider { OrmConfiguration.Dialect}");
             }
+
         }
 
         private IDbConnection GetConnection()
