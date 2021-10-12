@@ -17,6 +17,8 @@
 
         public bool IsUsingSchemas { get; protected set; }
 
+        public string DefaultSchema { get; protected set; }
+
         public string ParameterPrefix { get; protected set; }
 
         public string SqlIdentityStatement { get; protected set; }
