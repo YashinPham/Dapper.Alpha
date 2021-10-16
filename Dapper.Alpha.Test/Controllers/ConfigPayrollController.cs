@@ -28,14 +28,15 @@ namespace Dapper.Alpha.Test.Controllers
         [HttpGet]
         public async Task<ConfigPayRollDto> GetAsync()
         {
-            var config = await ConfigPayRollRepository.FindAsync();
-            if (config == null)
-            {
-                config = new ConfigPayRoll();
-                config.Id = Guid.NewGuid();
-                config.CreatedAt = DateTime.Now;
-                await ConfigPayRollRepository.InsertAsync(config);
-            }
+            var id = Guid.Parse("1106872c-e247-40db-8db0-2c0d53fca51c");
+            var config = await ConfigPayRollRepository.FindAsync(c=> c.Id == id);
+            // if (config == null)
+            // {
+            //     config = new ConfigPayRoll();
+            //     config.Id = Guid.NewGuid();
+            //     config.CreatedAt = DateTime.Now;
+            //     await ConfigPayRollRepository.InsertAsync(config);
+            // }
             return _mapper.Map<ConfigPayRollDto>(config);
         }
 

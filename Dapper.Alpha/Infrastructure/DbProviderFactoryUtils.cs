@@ -1,5 +1,6 @@
 ﻿using Dapper.Alpha.Metadata;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
@@ -8,51 +9,56 @@ using System.Text;
 
 namespace Dapper.Alpha.Infrastructure
 {
+
     internal static class DbProviderFactoryUtils
     {
+        private static readonly ConcurrentDictionary<SqlDialect, DbProviderFactory> Providers = new ConcurrentDictionary<SqlDialect, DbProviderFactory>();
+
         public static DbProviderFactory GetDbProviderFactory(SqlDialect type)
         {
-            DbProviderFactory factory = null;
-            switch (type)
-            {
-                case SqlDialect.MsSql:
-                    {
-#if NETFULL
-                        factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
-                        break;
-#else
-                        factory = GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
-                        if (factory == null)
+            return Providers.GetOrAdd(type, type => {
+                DbProviderFactory factory = null;
+                switch (type)
+                {
+                    case SqlDialect.MsSql:
+                        {
+    #if NETFULL
                             factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
-                        break;
-#endif
-                    }
-                case SqlDialect.SqLite:
-                    {
-#if NETFULL
-                        factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
-                        break;
-#else
-                        factory = GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
-                        if (factory == null)
+                            break;
+    #else
+                            factory = GetDbProviderFactory("Microsoft.Data.SqlClient.SqlClientFactory", "Microsoft.Data.SqlClient");
+                            if (factory == null)
+                                factory = GetDbProviderFactory("System.Data.SqlClient.SqlClientFactory", "System.Data.SqlClient");
+                            break;
+    #endif
+                        }
+                    case SqlDialect.SqLite:
+                        {
+    #if NETFULL
                             factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
+                            break;
+    #else
+                            factory = GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
+                            if (factory == null)
+                                factory = GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
 
+                            break;
+    #endif
+                        }
+                    case SqlDialect.MySql:
+                        factory = GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
                         break;
-#endif
-                    }
-                case SqlDialect.MySql:
-                    factory = GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
-                    break;
 
-                case SqlDialect.PostgreSql:
-                    factory = GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
-                    break;
+                    case SqlDialect.PostgreSql:
+                        factory = GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
+                        break;
 
-            }
-            if (factory == null)
-                throw new InvalidOperationException($"Could not load library with sql provider of {type} dialect.");
+                }
+                if (factory == null)
+                    throw new InvalidOperationException($"Could not load library with sql provider of {type} dialect.");
 
-            return factory;
+                return factory;
+            });
         }
 
         public static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)

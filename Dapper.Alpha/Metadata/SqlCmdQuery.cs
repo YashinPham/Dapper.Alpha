@@ -6,7 +6,7 @@ namespace Dapper.Alpha.Metadata
 {
     public class SqlCmdQuery
     {
-        public StringBuilder SqlCmd { get; set; }
+        public string SqlCmd { get; set; }
 
         public IEnumerable<LogicalDeleteInfo> LogicalDeletedParams { get; set; }
 
@@ -14,7 +14,7 @@ namespace Dapper.Alpha.Metadata
 
         public SqlCmdQuery(StringBuilder cmd, IEnumerable<PropertyInfo> sqlParams = null, IEnumerable<LogicalDeleteInfo> logicalDeletedParams = null)
         {
-            SqlCmd = cmd;
+            SqlCmd = cmd.ToString();
             SqlParams = sqlParams ?? new PropertyInfo[] { };
             LogicalDeletedParams = logicalDeletedParams ?? new LogicalDeleteInfo[] { };
         }

@@ -56,6 +56,7 @@ namespace Dapper.Alpha
         public bool Delete(TEntity instance, int? commandTimeout = null)
         {
             var cmd = _SqlBuilder.GetCmdDeleteById<TEntity>();
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var dynParms = new DynamicParameters();
             var logicalDeletes = cmd.LogicalDeletedParams.ToArray();
 
@@ -65,12 +66,13 @@ namespace Dapper.Alpha
             foreach (var prop in cmd.SqlParams)
                 dynParms.Add(_SqlBuilder.SqlOptions.ParameterPrefix + prop.Name, prop.GetValue(instance));
 
-            return Connection.Execute(cmd.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout) > 0;
+            return Connection.Execute(sqlQuery.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout) > 0;
         }
 
         public Task<int> DeleteAsync(TEntity instance, int? commandTimeout = null)
         {
             var cmd = _SqlBuilder.GetCmdDeleteById<TEntity>();
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var dynParms = new DynamicParameters();
             var logicalDeletes = cmd.LogicalDeletedParams.ToArray();
 
@@ -80,7 +82,7 @@ namespace Dapper.Alpha
             foreach (var prop in cmd.SqlParams)
                 dynParms.Add(_SqlBuilder.SqlOptions.ParameterPrefix + prop.Name, prop.GetValue(instance));
 
-            return Connection.ExecuteAsync(cmd.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout);
+            return Connection.ExecuteAsync(sqlQuery.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout);
         }
 
         public bool Delete(Expression<Func<TEntity, bool>> predicate, int? commandTimeout = null)
@@ -92,6 +94,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdDelete<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var logicalDeletes = cmd.LogicalDeletedParams.ToArray();
 
@@ -99,9 +102,9 @@ namespace Dapper.Alpha
                 dynParms.Add(string.Format("{0}{1}_{2}", _SqlBuilder.SqlOptions.ParameterPrefix, logicalDeletes[i].StatusProperty.Name, i), logicalDeletes[i].DeleteValue);
 
             if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.Execute(cmd.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout) > 0;
+            return Connection.Execute(sqlQuery.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout) > 0;
         }
 
         public Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate, int? commandTimeout = null)
@@ -113,6 +116,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdDelete<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var logicalDeletes = cmd.LogicalDeletedParams.ToArray();
 
@@ -120,53 +124,59 @@ namespace Dapper.Alpha
                 dynParms.Add(string.Format("{0}{1}_{2}", _SqlBuilder.SqlOptions.ParameterPrefix, logicalDeletes[i].StatusProperty.Name, i), logicalDeletes[i].DeleteValue);
 
             if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.ExecuteAsync(cmd.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout);
+            return Connection.ExecuteAsync(sqlQuery.ToString(), dynParms, DbSession.Transaction, commandTimeout: commandTimeout);
         }
 
         public bool Update(TEntity instance)
         {
             var cmd = _SqlBuilder.GetCmdUpdate<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var sqlParams = _SqlBuilder.GetParams(instance, cmd.SqlParams.Select(o => o.Name));
-            return Connection.Execute(cmd.ToString(), sqlParams, DbSession.Transaction) > 0;
+            return Connection.Execute(sqlQuery.ToString(), sqlParams, DbSession.Transaction) > 0;
         }
 
         public bool Update(TEntity instance, params Expression<Func<TEntity, object>>[] includes)
         {
             var cmd = _SqlBuilder.GetCmdUpdateIncludes<TEntity>(includes);
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var sqlParams = _SqlBuilder.GetParams(instance, cmd.SqlParams.Select(o => o.Name), includes);
-            return Connection.Execute(cmd.ToString(), sqlParams, DbSession.Transaction) > 0;
+            return Connection.Execute(sqlQuery.ToString(), sqlParams, DbSession.Transaction) > 0;
         }
 
         public Task<int> UpdateAsync(TEntity instance)
         {
             var cmd = _SqlBuilder.GetCmdUpdate<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var sqlParams = _SqlBuilder.GetParams(instance, cmd.SqlParams.Select(o => o.Name));
-            return Connection.ExecuteAsync(cmd.ToString(), sqlParams, DbSession.Transaction);
+            return Connection.ExecuteAsync(sqlQuery.ToString(), sqlParams, DbSession.Transaction);
         }
 
         public Task<int> UpdateAsync(TEntity instance, params Expression<Func<TEntity, object>>[] includes)
         {
             var cmd = _SqlBuilder.GetCmdUpdate<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var sqlParams = _SqlBuilder.GetParams(instance, cmd.SqlParams.Select(o => o.Name), includes);
-            return Connection.ExecuteAsync(cmd.ToString(), sqlParams, DbSession.Transaction);
+            return Connection.ExecuteAsync(sqlQuery.ToString(), sqlParams, DbSession.Transaction);
         }
 
         public Task<int> BulkUpdateAsync(IEnumerable<TEntity> instances)
         {
             var entityType = typeof(TEntity);
             var cmd = _SqlBuilder.GetCmdUpdate<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var multiExec = _SqlBuilder.GetParams<TEntity>(instances, cmd.SqlParams.Select(o => o.Name));
-            return Connection.ExecuteAsync(cmd.ToString(), multiExec, transaction: DbSession.Transaction);
+            return Connection.ExecuteAsync(sqlQuery.ToString(), multiExec, transaction: DbSession.Transaction);
         }
 
         public bool BulkUpdate(IEnumerable<TEntity> instances)
         {
             var entityType = typeof(TEntity);
             var cmd = _SqlBuilder.GetCmdUpdate<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var multiExec = _SqlBuilder.GetParams<TEntity>(instances, cmd.SqlParams.Select(o => o.Name));
-            return Connection.Execute(cmd.ToString(), multiExec, transaction: DbSession.Transaction) > 0;
+            return Connection.Execute(sqlQuery.ToString(), multiExec, transaction: DbSession.Transaction) > 0;
         }
 
         public int Count() => Count(null);
@@ -180,6 +190,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdCount<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -192,17 +203,18 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QuerySingleOrDefault<int>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QuerySingleOrDefault<int>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public int Count(Expression<Func<TEntity, object>> distinctField)
         {
             var cmd = _SqlBuilder.GetCmdCount<TEntity>(distinctField);
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = new DynamicParameters();
             int deletedParamIndex = 1;
             foreach (var deletedInfo in cmd.LogicalDeletedParams)
@@ -210,7 +222,7 @@ namespace Dapper.Alpha
                 dynParms.Add(string.Format("{0}{1}_{2}", _SqlBuilder.SqlOptions.ParameterPrefix, deletedInfo.StatusProperty.Name, deletedParamIndex), deletedInfo.DeleteValue);
                 deletedParamIndex++;
             }
-            return Connection.QuerySingleOrDefault<int>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QuerySingleOrDefault<int>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public int Count(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField)
@@ -222,6 +234,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdCount<TEntity>(distinctField);
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -234,12 +247,12 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QuerySingleOrDefault<int>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QuerySingleOrDefault<int>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public Task<int> CountAsync() => CountAsync(null);
@@ -253,6 +266,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdCount<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -265,17 +279,18 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QuerySingleOrDefaultAsync<int>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QuerySingleOrDefaultAsync<int>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public Task<int> CountAsync(Expression<Func<TEntity, object>> distinctField)
         {
             var cmd = _SqlBuilder.GetCmdCount<TEntity>(distinctField);
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var dynParms = new DynamicParameters();
             int deletedParamIndex = 1;
             foreach (var deletedInfo in cmd.LogicalDeletedParams)
@@ -283,7 +298,7 @@ namespace Dapper.Alpha
                 dynParms.Add(string.Format("{0}{1}_{2}", _SqlBuilder.SqlOptions.ParameterPrefix, deletedInfo.StatusProperty.Name, deletedParamIndex), deletedInfo.DeleteValue);
                 deletedParamIndex++;
             }
-            return Connection.QuerySingleOrDefaultAsync<int>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QuerySingleOrDefaultAsync<int>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField)
@@ -295,6 +310,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdCount<TEntity>(distinctField);
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -307,12 +323,12 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QuerySingleOrDefaultAsync<int>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QuerySingleOrDefaultAsync<int>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public TEntity Find() => Find(null);
@@ -326,6 +342,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdFind<TEntity>();
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -338,12 +355,12 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QueryFirstOrDefault<TEntity>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QueryFirstOrDefault<TEntity>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public Task<TEntity> FindAsync() => FindAsync(null);
@@ -357,6 +374,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdFind<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -369,17 +387,18 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QueryFirstOrDefaultAsync<TEntity>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QueryFirstOrDefaultAsync<TEntity>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public TEntity FindById(object id)
         {
             var cmd = _SqlBuilder.GetCmdFindById<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var propsParams = cmd.SqlParams;
             var dynParms = new DynamicParameters();
             if (propsParams.Count() == 1)
@@ -395,12 +414,13 @@ namespace Dapper.Alpha
                 dynParms.Add(string.Format("{0}{1}_{2}", _SqlBuilder.SqlOptions.ParameterPrefix, deletedInfo.StatusProperty.Name, deletedParamIndex), deletedInfo.DeleteValue);
                 deletedParamIndex++;
             }
-            return Connection.QueryFirstOrDefault<TEntity>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QueryFirstOrDefault<TEntity>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public Task<TEntity> FindByIdAsync(object id)
         {
             var cmd = _SqlBuilder.GetCmdFindById<TEntity>();
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var propsParams = cmd.SqlParams;
             var dynParms = new DynamicParameters();
             if (propsParams.Count() == 1)
@@ -416,7 +436,7 @@ namespace Dapper.Alpha
                 dynParms.Add(string.Format("{0}{1}_{2}", _SqlBuilder.SqlOptions.ParameterPrefix, deletedInfo.StatusProperty.Name, deletedParamIndex), deletedInfo.DeleteValue);
                 deletedParamIndex++;
             }
-            return Connection.QueryFirstOrDefaultAsync<TEntity>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QueryFirstOrDefaultAsync<TEntity>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public IEnumerable<TEntity> FindAll() => FindAll(null);
@@ -430,6 +450,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdFindAll<TEntity>();
+            var sqlQuery = new  StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -442,12 +463,12 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.Query<TEntity>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.Query<TEntity>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
 
         public Task<IEnumerable<TEntity>> FindAllAsync() => FindAllAsync(null);
@@ -461,6 +482,7 @@ namespace Dapper.Alpha
             _SqlBuilder.BuildQuerySql<TEntity>(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
             var cmd = _SqlBuilder.GetCmdFindAll<TEntity>();
+            var sqlQuery = new StringBuilder(cmd.SqlCmd);
             var dynParms = conditions.ToDynamicParameters();
             var hasDeleted = false;
             int deletedParamIndex = 1;
@@ -473,12 +495,12 @@ namespace Dapper.Alpha
             if (hasDeleted)
             {
                 if (sqlBuilder.Length > 0)
-                    cmd.SqlCmd.AppendFormat(" AND {0}", sqlBuilder);
+                    sqlQuery.AppendFormat(" AND {0}", sqlBuilder);
             }
             else if (sqlBuilder.Length > 0)
-                cmd.SqlCmd.AppendFormat(" WHERE {0}", sqlBuilder);
+                sqlQuery.AppendFormat(" WHERE {0}", sqlBuilder);
 
-            return Connection.QueryAsync<TEntity>(cmd.ToString(), dynParms, DbSession.Transaction);
+            return Connection.QueryAsync<TEntity>(sqlQuery.ToString(), dynParms, DbSession.Transaction);
         }
     }
 }
