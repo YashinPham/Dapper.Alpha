@@ -38,7 +38,7 @@ namespace Dapper.Alpha
                     }
                 case SqlDialect.MySql:
                     {
-                        Dialect = SqlDialect.MsSql;
+                        Dialect = SqlDialect.MySql;
                         SqlBuilder = MySqlBuilder.GetInstance();
                         break;
                     }

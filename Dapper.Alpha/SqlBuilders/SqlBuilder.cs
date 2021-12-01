@@ -36,6 +36,10 @@ namespace Dapper.Alpha.SqlBuilders
                 Dialect = SqlDialect.MsSql;
             else if (SqlOptions is MySqlDatabaseOptions)
                 Dialect = SqlDialect.MySql;
+            else if (SqlOptions is PostreSqlDatabaseOptions)
+                Dialect = SqlDialect.PostgreSql;
+            else if (SqlOptions is SQLiteDatabaseOptions)
+                Dialect = SqlDialect.SqLite;
         }
 
         #region Common Func

@@ -15,7 +15,7 @@ namespace Dapper.Alpha.SqlBuilders
         private static object syncLock = new object();
 
         private MySqlBuilder()
-            : base(new MsSqlDatabaseOptions())
+            : base(new MySqlDatabaseOptions())
         {
 
         }
