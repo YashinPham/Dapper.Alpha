@@ -65,7 +65,7 @@ namespace Dapper.Alpha.SqlBuilders
             return SqlProperties.GetOrAdd(entityType, entityType =>
             {
                 var sqlProps = entityType.GetProperties().Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
-                return sqlProps.Select(o => new SqlPropertyInfo(o));
+                return sqlProps.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).Select(o => new SqlPropertyInfo(o));
             });
         }
 
@@ -572,10 +572,10 @@ namespace Dapper.Alpha.SqlBuilders
             });
         }
 
-        public SqlCmdQuery GetCmdFind<TEntity>() where TEntity : class
+        public SqlCmdQuery GetCmdFind<TEntity>(bool isAppendWhereClause = false) where TEntity : class
         {
             var entityType = typeof(TEntity);
-            var cacheKey = $"{Dialect}_{entityType}_Find";
+            var cacheKey = $"{Dialect}_{entityType}_Find{(isAppendWhereClause ? "1" : "")}";
             return SqlBuilderCacheDict.GetOrAdd(cacheKey, cacheKey =>
             {
                 var tableName = GetTableName(entityType);
@@ -602,7 +602,7 @@ namespace Dapper.Alpha.SqlBuilders
                 if (whereClause.Length != 0)
                     whereClause.Insert(0, "WHERE ");
 
-                cmd.Replace(SqlParameterTemplate.WhereClause, whereClause.ToString());
+                cmd.Replace(SqlParameterTemplate.WhereClause, isAppendWhereClause ? String.Format("{0} {1}", whereClause.ToString(), SqlParameterTemplate.WhereClause) : whereClause.ToString());
                 return new SqlCmdQuery(cmd, logicalDeletedParams: logicalDeletes);
             });
         }
