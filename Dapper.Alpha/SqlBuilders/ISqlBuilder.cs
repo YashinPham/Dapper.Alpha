@@ -21,7 +21,7 @@ namespace Dapper.Alpha.SqlBuilders
 
         SqlCmdQuery GetCmdDelete<TEntity>() where TEntity : class;
 
-        SqlCmdQuery GetCmdFind<TEntity>() where TEntity : class;
+        SqlCmdQuery GetCmdFind<TEntity>(bool isAppendWhereClause = false) where TEntity : class;
 
         SqlCmdQuery GetCmdFindById<TEntity>() where TEntity : class;
 
